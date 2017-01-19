@@ -21,12 +21,12 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	/**
 	 * The core of this file chooser.
 	 */
-	private FileChooserCore core;
+	private final FileChooserCore core;
 	
 	/**
 	 * The listeners for the event of select a file.
 	 */
-	private List<OnFileSelectedListener> listeners;
+	private final List<OnFileSelectedListener> listeners;
 	
 	// ----- Constructors ----- //
 	
@@ -50,45 +50,48 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 		super(context);
         
 		// Set layout.
-		this.setContentView(R.layout.daidalos_file_chooser);
+		setContentView(R.layout.daidalos_file_chooser);
 
 		// Maximize the dialog.
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.copyFrom(this.getWindow().getAttributes());
+        lp.copyFrom(getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.FILL_PARENT;
         lp.height = WindowManager.LayoutParams.FILL_PARENT;
-        this.getWindow().setAttributes(lp);
+		getWindow().setAttributes(lp);
         
         // By default, load the SD card files.
-        this.core = new FileChooserCore(this);
-        this.core.loadFolder(folderPath);
+		core = new FileChooserCore(this);
+		core.loadFolder(folderPath);
         
         // Initialize attributes.
-        this.listeners = new LinkedList<OnFileSelectedListener>();
+		listeners = new LinkedList<OnFileSelectedListener>();
 		
 		// Set the background color.
-        LinearLayout layout = (LinearLayout) this.findViewById(R.id.rootLayout);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.rootLayout);
         layout.setBackgroundColor(context.getResources().getColor(R.color.daidalos_backgroud));
                 
         // Add a listener for when a file is selected.
         core.addListener(new FileChooserCore.OnFileSelectedListener() {
+			@Override
 			public void onFileSelected(File folder, String name) {
 				// Call to the listeners.
-				for (int i = 0; i < FileChooserDialog.this.listeners.size(); i++) {
-					FileChooserDialog.this.listeners.get(i).onFileSelected(FileChooserDialog.this, folder, name);
+				for (int i = 0; i < listeners.size(); i++) {
+					listeners.get(i).onFileSelected(FileChooserDialog.this, folder, name);
 				}
 			}
 
+			@Override
 			public void onFileSelected(File file) {
 				// Call to the listeners.
-				for (int i = 0; i < FileChooserDialog.this.listeners.size(); i++) {
-					FileChooserDialog.this.listeners.get(i).onFileSelected(FileChooserDialog.this, file);
+				for (int i = 0; i < listeners.size(); i++) {
+					listeners.get(i).onFileSelected(FileChooserDialog.this, file);
 				}
 			}
 		});
 
 		// Add a listener for when the cancel button is pressed.
 		core.addListener(new FileChooserCore.OnCancelListener() {
+			@Override
 			public void onCancel() {
 				// Close activity.
                 FileChooserDialog.super.onBackPressed();
@@ -104,7 +107,7 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param listener The listener to add.
 	 */
 	public void addListener(OnFileSelectedListener listener) {
-		this.listeners.add(listener);
+		listeners.add(listener);
 	}
 	
 	/**
@@ -113,14 +116,14 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param listener The listener to remove.
 	 */
 	public void removeListener(OnFileSelectedListener listener) {
-		this.listeners.remove(listener);
+		listeners.remove(listener);
 	}
 	
 	/**
 	 * Removes all the listeners for the event of a file selected.
 	 */
 	public void removeAllListeners() {
-		this.listeners.clear();
+		listeners.clear();
 	}
 	
 	/**
@@ -151,7 +154,7 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param filter A regular expression.
 	 */
 	public void setFilter(String filter) {
-		this.core.setFilter(filter);
+		core.setFilter(filter);
 	}
 
 	/**
@@ -160,7 +163,7 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param folderFilter A regular expression.
 	 */
 	public void setFolderFilter(String folderFilter) {
-		this.core.setFolderFilter(folderFilter);
+		core.setFolderFilter(folderFilter);
 	}
 
 	/**
@@ -169,14 +172,14 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param show 'true' if only the files that can be selected must be show or 'false' if all the files must be show.
 	 */
 	public void setShowOnlySelectable(boolean show) {
-		this.core.setShowOnlySelectable(show);
+		core.setShowOnlySelectable(show);
 	}
 	
 	/**
 	 * Loads all the files of the SD card root.
 	 */
 	public void loadFolder() {
-		this.core.loadFolder();
+		core.loadFolder();
 	}
 	
 	/**
@@ -187,7 +190,7 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param folderPath The folder's path.
 	 */
 	public void loadFolder(String folderPath) {
-		this.core.loadFolder(folderPath);
+		core.loadFolder(folderPath);
 	}
 	
 	/**
@@ -196,7 +199,7 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param folderMode 'true' for select folders or 'false' for select files.
 	 */
 	public void setFolderMode(boolean folderMode) {
-		this.core.setFolderMode(folderMode);
+		core.setFolderMode(folderMode);
 	}
 	
 	/**
@@ -205,7 +208,7 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param canCreate 'true' if the user can create files or 'false' if it can only select them.
 	 */
 	public void setCanCreateFiles(boolean canCreate) {
-		this.core.setCanCreateFiles(canCreate);
+		core.setCanCreateFiles(canCreate);
 	}
 
 	/**
@@ -214,7 +217,7 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param canShow 'true' if the user can create files or 'false' if it can only select them.
 	 */
 	public void setShowCancelButton(boolean canShow) {
-		this.core.setShowCancelButton(canShow);
+		core.setShowCancelButton(canShow);
 	}
 
 	/**
@@ -223,7 +226,7 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param labels The labels.
 	 */
 	public void setLabels(FileChooserLabels labels) {
-		this.core.setLabels(labels);
+		core.setLabels(labels);
 	}
 	
 	/**
@@ -233,8 +236,8 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param onCreate 'true' for show a confirmation dialog when creating a file, 'false' if not.
 	 */
 	public void setShowConfirmation(boolean onSelect, boolean onCreate) {
-		this.core.setShowConfirmationOnCreate(onCreate);
-		this.core.setShowConfirmationOnSelect(onSelect);
+		core.setShowConfirmationOnCreate(onCreate);
+		core.setShowConfirmationOnSelect(onSelect);
 	}
 	
 	/**
@@ -243,17 +246,19 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * @param show 'true' for show the full path, 'false' for show only the name.
 	 */
 	public void setShowFullPath(boolean show) {
-		this.core.setShowFullPathInTitle(show);
+		core.setShowFullPathInTitle(show);
 	}
 	
     // ----- FileChooser methods ----- //
     
+	@Override
 	public LinearLayout getRootLayout() {
-		View root = this.findViewById(R.id.rootLayout);
+		View root = findViewById(R.id.rootLayout);
 		return (root instanceof LinearLayout)? (LinearLayout)root : null;
 	}  
 
+	@Override
 	public void setCurrentFolderName(String name) {
-		this.setTitle(name);
+		setTitle(name);
 	}
 }

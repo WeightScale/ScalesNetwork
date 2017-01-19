@@ -5,14 +5,14 @@ import android.os.Parcelable;
 import android.util.Log;
 
 /**
- * Created by Kostya on 10.07.2016.
+ * @author Kostya  on 10.07.2016.
  */
 public class MyObject implements Parcelable {
 
-    final static String LOG_TAG = "myLogs";
+    static final String LOG_TAG = "myLogs";
 
-    public String s;
-    public int i;
+    public final String s;
+    public final int i;
 
     // обычный конструктор
     public MyObject(String _s, int _i) {
@@ -21,11 +21,13 @@ public class MyObject implements Parcelable {
         i = _i;
     }
 
+    @Override
     public int describeContents() {
         return 0;
     }
 
     // упаковываем объект в Parcel
+    @Override
     public void writeToParcel(Parcel parcel, int flags) {
         Log.d(LOG_TAG, "writeToParcel");
         parcel.writeString(s);
@@ -34,11 +36,13 @@ public class MyObject implements Parcelable {
 
     public static final Creator<MyObject> CREATOR = new Creator<MyObject>() {
         // распаковываем объект из Parcel
+        @Override
         public MyObject createFromParcel(Parcel in) {
             Log.d(LOG_TAG, "createFromParcel");
             return new MyObject(in);
         }
 
+        @Override
         public MyObject[] newArray(int size) {
             return new MyObject[size];
         }

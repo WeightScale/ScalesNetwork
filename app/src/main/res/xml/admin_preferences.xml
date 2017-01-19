@@ -39,6 +39,8 @@
                                 android:entries="@array/array_flow_control"
                                 android:entryValues="@array/array_flow_control" />
             </PreferenceScreen>
+            <EditTextPreference android:title="ПИН-код" android:summary="Пин код полученый при регистрации весов" android:key="@string/KEY_PIN"
+                                android:gravity="right" android:inputType="number"/>
         </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory android:title="НАСТРОЙКИ WiFi">

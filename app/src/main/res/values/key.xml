@@ -40,4 +40,6 @@
     <string name="KEY_MEMORY_PHOTO">key_memory_photo</string>
     <string name="KEY_POWER">key_power</string>
     <string name="KEY_CHECK_AUTO_NULL">key_check_auto_null</string>
+    <string name="KEY_PIN">key_pin_scale</string>
+    <string name="KEY_REGISTER">key_register</string>
 </resources>

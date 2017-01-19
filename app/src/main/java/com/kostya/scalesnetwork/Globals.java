@@ -1,5 +1,5 @@
 package com.kostya.scalesnetwork;
-/** Удалил бяку */
+/* Удалил бяку */
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,8 +12,6 @@ import com.kostya.serializable.TerminalObject;
 import com.kostya.serializable.Terminals;
 
 import java.io.File;
-
-import static com.kostya.serializable.ComPortObject.usbProperties;
 
 /** Created by Kostya on 23.01.2016.
  * @author Kostya
@@ -58,29 +56,29 @@ public class Globals {
             Log.e(TAG, e.getMessage());
         }
 
-        /** Создаем путь к временной папке для для хранения файлов. */
+        /* Создаем путь к временной папке для для хранения файлов. */
         //pathLocalForms = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + FOLDER_LOCAL_FORMS);
-        /** Создаем путь к папке для для хранения файлов с данными формы google disk form. */
+        /* Создаем путь к папке для для хранения файлов с данными формы google disk form. */
         pathLocalForms = new File(context.getFilesDir() + File.separator + FOLDER_LOCAL_FORMS);
-        /** Если нет папки тогда создаем. */
+        /* Если нет папки тогда создаем. */
         if (!pathLocalForms.exists()) {
             if (!pathLocalForms.mkdirs()) {
                 new EventsTable(context).insertNewEvent("Путь не созданый: " + pathLocalForms.getPath(), EventsTable.Event.PATH_STORE);
             }
         }
-        /** Создаем локальный весовой терминал. */
+        /* Создаем локальный весовой терминал. */
         int t = Integer.valueOf(new SystemTable(context).getProperty(SystemTable.Name.TERMINAL, String.valueOf(Terminals.DEFAULT.ordinal())));
         localTerminal = new TerminalObject(Terminals.values()[t]);
-        /** Извлекаем настройки из базы данных. */
+        /* Извлекаем настройки из базы данных. */
         SystemTable systemTable = new SystemTable(context);
         ComPortObject comPortObject = new ComPortObject();
         comPortObject.setSpeed(Integer.valueOf(systemTable.getProperty(SystemTable.Name.SPEED_PORT, "9600")));
-        comPortObject.setDataBits(usbProperties.get(systemTable.getProperty(SystemTable.Name.FRAME_PORT, "8")));
-        comPortObject.setStopBits(usbProperties.get(systemTable.getProperty(SystemTable.Name.STOP_BIT, "1")));
-        comPortObject.setParity(usbProperties.get(systemTable.getProperty(SystemTable.Name.PARITY_BIT, "none")));
-        comPortObject.setFlowControl(usbProperties.get(systemTable.getProperty(SystemTable.Name.FLOW_CONTROL, "OFF")));
+        comPortObject.setDataBits(ComPortObject.usbProperties.get(systemTable.getProperty(SystemTable.Name.FRAME_PORT, "8")));
+        comPortObject.setStopBits(ComPortObject.usbProperties.get(systemTable.getProperty(SystemTable.Name.STOP_BIT, "1")));
+        comPortObject.setParity(ComPortObject.usbProperties.get(systemTable.getProperty(SystemTable.Name.PARITY_BIT, "none")));
+        comPortObject.setFlowControl(ComPortObject.usbProperties.get(systemTable.getProperty(SystemTable.Name.FLOW_CONTROL, "OFF")));
 
-        /** Добавляем сохраненные настройки порта. */
+        /* Добавляем сохраненные настройки порта. */
         localTerminal.setComPortObject(comPortObject);
 
 

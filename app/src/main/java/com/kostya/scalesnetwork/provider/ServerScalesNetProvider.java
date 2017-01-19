@@ -84,7 +84,7 @@ public class ServerScalesNetProvider extends ContentProvider {
             case SENDER_LIST:
             case SENDER_ID:
                 return SenderTable.TABLE; // return
-            /** PROVIDE A DEFAULT CASE HERE **/
+            /* PROVIDE A DEFAULT CASE HERE **/
             default:
                 // If the URI doesn't match any of the known patterns, throw an exception.
                 throw new IllegalArgumentException("Unknown URI " + uri);

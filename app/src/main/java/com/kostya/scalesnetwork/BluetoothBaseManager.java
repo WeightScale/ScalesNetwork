@@ -13,7 +13,6 @@ import android.util.Log;
 import com.kostya.serializable.Command;
 import com.kostya.serializable.CommandObject;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
@@ -22,12 +21,12 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 /**
- * @author Kostya Created by Kostya on 04.07.2016.
+ * @author Kostya on 04.07.2016.
  */
 public class BluetoothBaseManager {
-    Context mContext;
-    private BroadcastReceiverBluetooth broadcastReceiverBluetooth;
-    private BluetoothAdapter mBluetoothAdapter;
+    final Context mContext;
+    private final BroadcastReceiverBluetooth broadcastReceiverBluetooth;
+    private final BluetoothAdapter mBluetoothAdapter;
     //private BufferedReader inputBufferedReader;
     //private PrintWriter outputPrintWriter;
     private ObjectInputStream objectInputStream;
@@ -39,7 +38,7 @@ public class BluetoothBaseManager {
     private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static  final String NAME = "ServerScales";
     private static final String TAG = BluetoothBaseManager.class.getName();
-    boolean flagTimeout = false;
+    boolean flagTimeout;
 
     public BluetoothBaseManager(Context context) throws Exception {
         mContext = context;
@@ -47,7 +46,7 @@ public class BluetoothBaseManager {
         if(mBluetoothAdapter == null)
             throw new Exception("Bluetooth adapter missing");
         mBluetoothAdapter.enable();
-        /** Флаг таймаут включения bluetooth */
+        /* Флаг таймаут включения bluetooth */
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -58,7 +57,7 @@ public class BluetoothBaseManager {
         while (!mBluetoothAdapter.isEnabled() && !flagTimeout) ;//ждем включения bluetooth или таймаут.
         if(flagTimeout)
             throw new Exception("Timeout enabled bluetooth");
-        /** Приемник событий bluetooth*/
+        /* Приемник событий bluetooth*/
         broadcastReceiverBluetooth = new BroadcastReceiverBluetooth();
         IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
@@ -112,7 +111,7 @@ public class BluetoothBaseManager {
      */
     private class AcceptThread extends Thread {
         private BluetoothServerSocket mmServerSocket;
-        private boolean isClosedSocket = false;
+        private boolean isClosedSocket;
 
         public AcceptThread() {
             /*BluetoothServerSocket tmp = null;
@@ -122,15 +121,16 @@ public class BluetoothBaseManager {
             mmServerSocket = tmp;*/
         }
 
+        @Override
         public void run() {
             BluetoothSocket socket = null;
-            /** Пока процесс не прерван. */
+            /* Пока процесс не прерван. */
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     mmServerSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(NAME, uuid);
                     socket = mmServerSocket.accept(10000);
                     if (socket != null) {
-                        /** Процедура обработки приема и отправки данных. */
+                        /* Процедура обработки приема и отправки данных. */
                         processInputInputOutputBuffers(socket);
                     }
                 } catch (Exception e) {
@@ -142,7 +142,7 @@ public class BluetoothBaseManager {
                     //// TODO: 09.07.2016  
                 }
             }
-            /** Закрываем socket  */
+            /* Закрываем socket  */
             try {socket.close();} catch (Exception e) {}
             cancel();
         }
@@ -173,22 +173,22 @@ public class BluetoothBaseManager {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
-            /** Пока socket не разорван. */
+            /* Пока socket не разорван. */
             while (!isClosedSocket){
                 CommandObject object = (CommandObject) objectInputStream.readObject();
                 if (object != null){
-                    /** Выполняем принятую команду. */
+                    /* Выполняем принятую команду. */
                     CommandObject response = object.execute(mContext);
                     if (response != null){
-                        Log.d(TAG, "Received message : " + response.toString());
-                        /** Ответ на команду. */
+                        Log.d(TAG, "Received message : " + response);
+                        /* Ответ на команду. */
                         objectOutputStream.writeObject(response);
                         objectOutputStream.flush();
                     }
                 }
                 Thread.sleep(10);
             }
-            /** Закрываем при разрыве socket */
+            /* Закрываем при разрыве socket */
             //try { inputBufferedReader.close(); }catch (Exception e){}
             //try {outputPrintWriter.close(); }catch (Exception e){}
             try { objectInputStream.close(); }catch (Exception e){}

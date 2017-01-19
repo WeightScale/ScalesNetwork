@@ -37,7 +37,7 @@ public class DataTransferringManager {
     private ExecutorService executorService;
     private JmDNS jmdns;
     Context context;
-    private List<ServiceInfo> listClients = new ArrayList<>();
+    private final List<ServiceInfo> listClients = new ArrayList<>();
     private ServiceListener listener;
     private ServiceInfo serviceInfo;
     private MulticastLock multiCastLock;
@@ -77,13 +77,13 @@ public class DataTransferringManager {
                 jmdns.addServiceListener(serviceType, listener = new ServiceListener() {
                     @Override
                     public void serviceResolved(ServiceEvent ev) {
-                        /** Если сервер добавляем список клиентов. */
+                        /* Если сервер добавляем список клиентов. */
                         if (ev.getName().startsWith(SERVICE_INFO_NAME_CLIENT)){
                             listClients.add(ev.getInfo());
                             onRegisterServiceListener.onEvent(listClients.size());
                             String ip = getIPv4FromServiceInfo(serviceInfo);
                             Globals.getInstance().getLocalTerminal().setIpAddress(ip);
-                            /** Посылаем локальный терминал клиенту. */
+                            /* Посылаем локальный терминал клиенту. */
                             new CommandObject(Commands.CMD_DEFAULT_TERMINAL, Globals.getInstance().getLocalTerminal()).sendDevicesInNetwork(getContext(),ip);
                             //sendObjectToDevicesInNetwork(getContext(), getIPv4FromServiceInfo(ev.getInfo()), Globals.getInstance().getLocalTerminal());
                             onRegisterServiceListener.onEvent(jmdns.list(serviceType).length);

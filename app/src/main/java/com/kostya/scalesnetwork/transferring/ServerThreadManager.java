@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class ServerThreadManager implements InterfaceInterruptThread {
     private static final String TAG = ServerThreadManager.class.getName();
     private ServerThreadProcess serverThreadProcess;
-    private ArrayList<ServerThread> listServerThreads = new ArrayList<ServerThread>();
+    private final ArrayList<ServerThread> listServerThreads = new ArrayList<ServerThread>();
 
     @Override
     public void onRemoveThread(ServerThread thread) {
@@ -19,7 +19,7 @@ public class ServerThreadManager implements InterfaceInterruptThread {
 
     @Override
     public void onAddThread(ServerThread thread) {
-        /** Добавляем в список. */
+        /* Добавляем в список. */
         listServerThreads.add(thread);
     }
 

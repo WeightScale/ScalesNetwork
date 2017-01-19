@@ -4,9 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -22,11 +19,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by Kostya on 26.06.2016.
+ * @author Kostya on 26.06.2016.
  */
 public class ListPreferenceTerminals extends ListPreference {
     private int mClickedDialogEntryIndex;
-    List<Terminals> terminals = Arrays.asList(Terminals.values());
+    final List<Terminals> terminals = Arrays.asList(Terminals.values());
     //List<ScanResult> scanResultList;
 
 

@@ -206,4 +206,6 @@
     <string name="KEY_WIFI_DEFAULT">key_wifi_default</string>
     <string name="KEY_TERMINALS">key_terminals</string>
     <string name="KEY_PATH_FORM">key_path_form</string>
+    <string name="Name_terminal">"Модель терминала: "</string>
+    <string name="Name_network">"Имя сети WiFi: "</string>
 </resources>

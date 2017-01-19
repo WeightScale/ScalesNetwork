@@ -5,10 +5,8 @@ import android.net.wifi.WifiManager;
 import com.kostya.scalesnetwork.Globals;
 import com.kostya.scalesnetwork.provider.SystemTable;
 
-import java.io.Serializable;
-
 /**
- * Created by Kostya on 10.07.2016.
+ * @author Kostya on 10.07.2016.
  */
 public enum  Commands {
     /** Версия */

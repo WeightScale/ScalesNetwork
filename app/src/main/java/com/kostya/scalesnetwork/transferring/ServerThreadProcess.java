@@ -14,7 +14,7 @@ public class ServerThreadProcess extends Thread {
     public static final int SERVER_PORT = 8700;
     private final Context context;
     private final ServerSocket serverSocket;
-    private InterfaceInterruptThread interfaceInterruptThread;
+    private final InterfaceInterruptThread interfaceInterruptThread;
 
     private static final String TAG = ServerThreadProcess.class.getName();
 
@@ -32,10 +32,10 @@ public class ServerThreadProcess extends Thread {
 
     @Override
     public void run() {
-        /** Выполняем пока не прерьвемся. */
+        /* Выполняем пока не прерьвемся. */
         while (!isInterrupted()) {
             try {
-                /** Новый поток ждет создания когда присоеденится клиент.  */
+                /* Новый поток ждет создания когда присоеденится клиент.  */
                 ServerThread thread = new ServerThread(context, serverSocket.accept(), interfaceInterruptThread);
                 thread.start();
             } catch (IOException e) {

@@ -20,12 +20,12 @@ import com.kostya.scalesnetwork.R;
 import java.util.List;
 
 /**
- * Created by Kostya on 26.06.2016.
+ * @author Kostya on 26.06.2016.
  */
 public class ListPreferenceWifi extends ListPreference {
     private int mClickedDialogEntryIndex;
-    List<WifiConfiguration> list;
-    List<ScanResult> scanResultList;
+    final List<WifiConfiguration> list;
+    final List<ScanResult> scanResultList;
 
 
     public ListPreferenceWifi(Context context, AttributeSet attrs) {

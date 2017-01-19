@@ -33,14 +33,12 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/weightTextView"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/text_big"
-                        android:gravity="center" android:clickable="true"
+                    android:gravity="center" android:clickable="true"
                         android:textIsSelectable="false"
                         style="@style/shadowEffect"
                         android:typeface="normal"
-                        android:textStyle="bold|italic"
-                        android:singleLine="true"/>
+                    android:singleLine="true"
+                    android:textAppearance="@style/SpanTextWeight" />
             </LinearLayout>
 
             <com.google.android.gms.ads.AdView

@@ -2,7 +2,6 @@ package com.kostya.scalesnetwork.settings;
 
 //import android.content.SharedPreferences;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -13,7 +12,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.*;
 import android.provider.BaseColumns;
@@ -84,6 +82,7 @@ public class ActivityPreferencesAdmin extends PreferenceActivity implements Shar
                                 wifi_ssid.getEditor().putString(preference.getContext().getString(R.string.KEY_WIFI_SSID), netName).commit();
                                 wifi_ssid.getOnPreferenceChangeListener().onPreferenceChange(preference, netName);
                             }*/
+                            Globals.getInstance().terminal = (Terminals)o;
                             name.setTitle('"' + terminalName + '"');
                             Toast.makeText(mContext, mContext.getString(R.string.preferences_yes)+' '+ terminalName, Toast.LENGTH_SHORT).show();
                             return true;
@@ -124,6 +123,59 @@ public class ActivityPreferencesAdmin extends PreferenceActivity implements Shar
                 });
             }
 
+        },
+        REGISTER(R.string.KEY_REGISTER){
+            @Override
+            void setup(final Preference name) throws Exception {
+                final Context mContext = name.getContext();
+                //name.setTitle(mContext.getString(R.string.User_google_disk) + '"' + systemTable.getProperty(SystemTable.Name.USER) + '"');
+                name.setTitle(systemTable.getProperty(SystemTable.Name.USER_GOOGLE));
+                name.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object o) {
+                        if (o.toString().isEmpty()) {
+                            Toast.makeText(name.getContext(), R.string.preferences_no, Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+
+                        if(systemTable.updateEntry(SystemTable.Name.USER_GOOGLE, o.toString())){
+                            name.setTitle( o.toString());
+                            Toast.makeText(mContext, mContext.getString(R.string.preferences_yes)+' '+ o.toString(), Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+
+                        name.setSummary("Account Google: ???");
+                        Toast.makeText(mContext, R.string.preferences_no, Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
+            }
+        },
+        PIN_TABLE(R.string.KEY_PIN){
+            @Override
+            void setup(final Preference name) throws Exception {
+                final Context mContext = name.getContext();
+                name.setTitle(systemTable.getProperty(SystemTable.Name.PIN_TABLE));
+                name.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object o) {
+                        if (o.toString().isEmpty()) {
+                            Toast.makeText(name.getContext(), R.string.preferences_no, Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+                        if(systemTable.updateEntry(SystemTable.Name.PIN_TABLE, o.toString())){
+                            name.setTitle(o.toString());
+                            Toast.makeText(mContext, mContext.getString(R.string.preferences_yes)+' '+ o.toString(), Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+
+                        preference.setSummary("ПИН-код таблици: ???");
+                        Toast.makeText(name.getContext(), R.string.preferences_no, Toast.LENGTH_SHORT).show();
+
+                        return false;
+                    }
+                });
+            }
         },
         FRAME_PORT(R.string.KEY_SERIAL_FRAME){
             Context mContext;
@@ -564,20 +616,20 @@ public class ActivityPreferencesAdmin extends PreferenceActivity implements Shar
                     @Override
                     public void onFileSelected(Dialog source, File file) {
                         source.hide();
-                        /** Получаем путь к файлу. */
+                        /* Получаем путь к файлу. */
                         Uri uri = Uri.fromFile(file);
-                        /** Создаем фаил с именем . */
+                        /* Создаем фаил с именем . */
                         File storeFile = new File(Globals.getInstance().pathLocalForms, "form.xml");
                         try {
-                            /** Создаем поток для записи фаила в папку хранения. */
+                            /* Создаем поток для записи фаила в папку хранения. */
                             FileOutputStream fileOutputStream = new FileOutputStream(storeFile);
                             InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
-                            /** Получаем байты данных. */
+                            /* Получаем байты данных. */
                             byte[] bytes = ByteStreams.toByteArray(inputStream);
                             inputStream.close();
-                            /** Записываем фаил в папку. */
+                            /* Записываем фаил в папку. */
                             fileOutputStream.write(bytes);
-                            /** Закрываем поток. */
+                            /* Закрываем поток. */
                             fileOutputStream.close();
                             Toast.makeText(mContext, "Фаил сохранен " + file.getPath(),  Toast.LENGTH_LONG).show();
                         } catch (Exception e) {
@@ -732,20 +784,20 @@ public class ActivityPreferencesAdmin extends PreferenceActivity implements Shar
         switch (requestCode) {
             case FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK) {
-                    /** Получаем путь к файлу. */
+                    /* Получаем путь к файлу. */
                     Uri uri = data.getData();
-                    /** Создаем фаил с именем . */
+                    /* Создаем фаил с именем . */
                     File file = new File(Globals.getInstance().pathLocalForms, "form.xml");
                     try {
-                        /** Создаем поток для записи фаила в папку хранения. */
+                        /* Создаем поток для записи фаила в папку хранения. */
                         FileOutputStream fileOutputStream = new FileOutputStream(file);
                         InputStream inputStream = getContentResolver().openInputStream(uri);
-                        /** Получаем байты данных. */
+                        /* Получаем байты данных. */
                         byte[] bytes = ByteStreams.toByteArray(inputStream);
                         inputStream.close();
-                        /** Записываем фаил в папку. */
+                        /* Записываем фаил в папку. */
                         fileOutputStream.write(bytes);
-                        /** Закрываем поток. */
+                        /* Закрываем поток. */
                         fileOutputStream.close();
                         Toast.makeText(this, "Фаил сохранен " + file.getPath(),  Toast.LENGTH_LONG).show();
                     } catch (Exception e) {

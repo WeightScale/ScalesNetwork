@@ -1,6 +1,7 @@
 package com.kostya.scalesnetwork.task;
 
 import android.app.IntentService;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,9 +14,8 @@ import android.util.Log;
 import com.kostya.scalesnetwork.Globals;
 import com.kostya.scalesnetwork.Internet;
 import com.kostya.scalesnetwork.provider.EventsTable;
-import com.kostya.scalesnetwork.transferring.ServerThreadProcess;
-import com.viktyusk.scales.Event;
-import com.viktyusk.scales.ScalesConnection;
+import com.kostya.scalesnetwork.provider.SystemTable;
+//import com.viktyusk.scales.*;
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.entity.UrlEncodedFormEntity;
@@ -35,18 +35,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.*;
-
-import static android.provider.Settings.System.DATE_FORMAT;
 
 
 /**
  * @author Kostya  on 28.06.2016.
  */
 public class IntentServiceHttpPost extends IntentService {
+    private SystemTable systemTable;
     public static final String filePath = "forms/kolosok.xml";
     public static final String nameForm = "EventsForm";
     public static final String TAG = IntentServiceHttpPost.class.getName();
@@ -60,11 +56,12 @@ public class IntentServiceHttpPost extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
+            systemTable = new SystemTable(getBaseContext());
             String action = intent.getAction();
             switch (action){
                 case ACTION_EVENT_TABLE:
-                    //runSendEventTable();
-                    sendServerEventTable();
+                    runSendEventTable();
+                    //sendServerEventTable();
                 break;
                 default:{
                     Bundle bundle = intent.getExtras();
@@ -81,19 +78,15 @@ public class IntentServiceHttpPost extends IntentService {
 
     }
 
-    void sendServerEventTable(){
+    /*void sendServerEventTable(){
         if (!Internet.getConnection(10000, 10)) {return;}
 
         try {
             Cursor event = new EventsTable(getApplicationContext()).getPreliminary();
             if (event.getCount() > 0) {
-                //Query query = new Query();
-                //query.connectToAddEvents("1234");
-                ScalesConnection scalesConnection = new ScalesConnection("1234");
+                Scale scale = new Scale(systemTable.getProperty(SystemTable.Name.TERMINAL), systemTable.getProperty(SystemTable.Name.PIN_TABLE));
                 event.moveToFirst();
                 if (!event.isAfterLast()) {
-                    //Event[] events = new Event[event.getCount()];
-                    List<Event> eventList = new ArrayList<>();
                     do {
                         String date = event.getString(event.getColumnIndex(EventsTable.KEY_DATE_TIME));
                         String deviceId = event.getString(event.getColumnIndex(EventsTable.KEY_DEVICE_ID));
@@ -101,32 +94,30 @@ public class IntentServiceHttpPost extends IntentService {
                         String eventValue = event.getString(event.getColumnIndex(EventsTable.KEY_EVENT_TEXT));
 
                         Event ev = new Event(date, eventName, eventValue);
-                        eventList.add(ev);
                         try {
-                            //Query query = new Query(eventList.toArray(new Event[eventList.size()]));
-                            scalesConnection.addEvents(ev);
-
+                            scale.addEvent(ev);
                             int id = event.getInt(event.getColumnIndex(EventsTable.KEY_ID));
                             new EventsTable(getApplicationContext()).updateEntry(id, EventsTable.KEY_STATE, EventsTable.State.CHECK_ON_SERVER.ordinal());
-                        }catch (Exception e){
-                            Log.e(TAG, e.getMessage());
+                        }catch (ScaleNotExistsException e){
+                            Log.e(TAG, "Весы не существуют");
+                        }catch (WrongPINException e){
+                            Log.e(TAG, "Не правильный ПИН-код");
                         }
                     } while (event.moveToNext());
                 }
-                //query.close();
             }
             event.close();
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
-    }
+    }*/
 
     void runSendEventTable(){
 
         if (!Internet.getConnection(10000, 10)) {return;}
 
         try {
-            /** Класс формы для передачи данных весового чека.*/
+            /* Класс формы для передачи данных весового чека.*/
             //String path = new SystemTable(getApplicationContext()).getProperty(SystemTable.Name.PATH_FORM);
             //GoogleForms.Form form = new GoogleForms(getApplicationContext().getAssets().open(filePath)).createForm(nameForm);
             //InputStream inputStream = getApplicationContext().getContentResolver().openInputStream(Uri.parse(path));
@@ -221,6 +212,7 @@ public class IntentServiceHttpPost extends IntentService {
         }
 
 
+        @Override
         public ValuePair clone() throws CloneNotSupportedException {
             return (ValuePair) super.clone();
         }

@@ -1,9 +1,5 @@
 package com.kostya.serializable;
 
-/**
- * on 11.07.2016.
- */
-
 import com.felhr.usbserial.UsbSerialInterface;
 
 import java.io.Serializable;

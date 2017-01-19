@@ -134,7 +134,7 @@ public class Internet {
      * @param on true - включить.
      */
     private boolean turnOnDataConnection(boolean on) {
-        /** Настройки администратора мобильный интернет */
+        /* Настройки администратора мобильный интернет */
         if(Globals.getInstance().getPreferencesScales().read(mContext.getString(R.string.KEY_MOBIL_INTERNET), false)){
             try {
                 int bv = Build.VERSION.SDK_INT;

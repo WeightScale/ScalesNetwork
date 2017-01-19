@@ -1,7 +1,7 @@
 package com.kostya.scalesnetwork.transferring;
 
-/**
- * @author Kostya on 14.07.2016.
+/*
+  @author Kostya on 14.07.2016.
  */
 
 /**

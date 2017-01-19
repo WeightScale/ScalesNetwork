@@ -2525,7 +2525,7 @@ public class NumberPicker extends LinearLayout {
             info.setEnabled(isEnabled());
             info.setScrollable(true);
 
-            /** TODO: Figure out compat implementation for this
+            /* TODO: Figure out compat implementation for this
             final float applicationScale =
                     getContext().getResources().getCompatibilityInfo().applicationScale;
 

@@ -80,8 +80,8 @@ public class WifiBaseManager  {
             eventsTable.insertNewEvent(e.getMessage(), EventsTable.Event.WIFI_EVENT);
         }
         try {
-            /** Проверяем сеть на соединение и имя конкретной сети.
-             * Если верно то вызываем обратный вызов  и запускаем приемник на событие disconnect.  */
+            /* Проверяем сеть на соединение и имя конкретной сети.
+              Если верно то вызываем обратный вызов  и запускаем приемник на событие disconnect.  */
             if (networkInfo.isConnected() && wifiInfo.getSSID().replace("\"", "").equals(ssid)) {
                 onWifiConnectListener.onConnect(ssid);
                 new SupplicantDisconnectReceiver().register(context, new IntentFilter(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION));
@@ -93,9 +93,9 @@ public class WifiBaseManager  {
         } catch (Exception e) {
             eventsTable.insertNewEvent(e.getMessage(), EventsTable.Event.WIFI_EVENT);
         }
-        /** Запускаем приемник на прием события результат сканирования.*/
+        /* Запускаем приемник на прием события результат сканирования.*/
         context.registerReceiver(new ScanWifiReceiver(), new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        /** Запускаем сканирование сети. */
+        /* Запускаем сканирование сети. */
         wifiManager.startScan();
     }
 
@@ -106,39 +106,39 @@ public class WifiBaseManager  {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            /** Получаем результат сканирования сети.*/
+            /* Получаем результат сканирования сети.*/
             List<ScanResult> scanResultList = wifiManager.getScanResults();
             try {
                 String security = null;
                 boolean found = false;
-                /** Сравниваем результат с конктетной сетью. */
+                /* Сравниваем результат с конктетной сетью. */
                 for (ScanResult scanResult : scanResultList) {
-                    /** Если верно то конкретная сеть есть в сети.*/
+                    /* Если верно то конкретная сеть есть в сети.*/
                     if (scanResult.SSID.equals(ssid)) {
-                        /** Получаем тип безопасности сети. */
+                        /* Получаем тип безопасности сети. */
                         security = getScanResultSecurity(scanResult);
-                        /** Флаг конкретная сеть в сети. */
+                        /* Флаг конкретная сеть в сети. */
                         found = true;
                         break; // found don't need continue
                     }
                 }
-                /** Провероверяем конкретную сеть в сохраненных конфигурациях.*/
+                /* Провероверяем конкретную сеть в сохраненных конфигурациях.*/
                 if (found) {
                     boolean isConfigNet = false;
                     WifiConfiguration conf = new WifiConfiguration();
                     List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
                     for (WifiConfiguration wifiConfiguration : list){
                         try {
-                            /** Если конкретная сеть есть в конфигурациях. */
+                            /* Если конкретная сеть есть в конфигурациях. */
                             if (wifiConfiguration.SSID.replace("\"", "").equals(ssid)){
-                                /** сохраняем конфигурацию во временный переменную.*/
+                                /* сохраняем конфигурацию во временный переменную.*/
                                 conf = wifiConfiguration;
-                                /** Флаг конкретная сеть есть в конфигурациях.*/
+                                /* Флаг конкретная сеть есть в конфигурациях.*/
                                 isConfigNet = true;
                                 break;
                             }
                         }catch (Exception e){
-                            /** Значит конфигурация сети дает исключение. Удаляем конфигурацию. */
+                            /* Значит конфигурация сети дает исключение. Удаляем конфигурацию. */
                             wifiManager.removeNetwork(wifiConfiguration.networkId);
                             wifiManager.saveConfiguration();
                         }
@@ -159,31 +159,31 @@ public class WifiBaseManager  {
                             break;
                         default:
                     }
-                    /** Удаляем регистрацию приемника. */
+                    /* Удаляем регистрацию приемника. */
                     try {context.unregisterReceiver(connectionReceiver);} catch (Exception e) {} // do nothing
-                    /** Регестрируем приемник заново. */
+                    /* Регестрируем приемник заново. */
                     connectionReceiver = new ConnectionReceiver();
                     IntentFilter intentFilter = new IntentFilter();
                     intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
                     intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
                     intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
                     context.registerReceiver(connectionReceiver, intentFilter);
-                    /** Если нет то добавляем конкретную сеть в список конфигураций. */
+                    /* Если нет то добавляем конкретную сеть в список конфигураций. */
                     if(!isConfigNet){
                         conf.networkId = wifiManager.addNetwork(conf);
                     }
                     int netId = wifiManager.updateNetwork(conf);
-                    /** Ошибка добавления конфигурации сети. */
+                    /* Ошибка добавления конфигурации сети. */
                     if(netId == -1)
                         return;
-                    /** Сохраняем конфиругацию и перезапускаем сеть. */
+                    /* Сохраняем конфиругацию и перезапускаем сеть. */
                     wifiManager.saveConfiguration();
                     wifiManager.disconnect();
                     wifiManager.enableNetwork(netId, true);
                     wifiManager.reconnect();
-                    /** Удаляем регистрацию приемника. */
+                    /* Удаляем регистрацию приемника. */
                     context.unregisterReceiver(this);
-                    return; /** Выходим после реконекта. */
+                    return; /* Выходим после реконекта. */
                 }
             } catch (Exception e) {
                 eventsTable.insertNewEvent(e.getMessage(), EventsTable.Event.WIFI_EVENT);
@@ -213,24 +213,24 @@ public class WifiBaseManager  {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            /** Проверяем событие соединение с конкретной сетью. */
+            /* Проверяем событие соединение с конкретной сетью. */
             if (networkInfo.isConnected() && wifiInfo.getSSID().replace("\"", "").equals(ssid)) {
-                /** Если верно удаляем приемник сообщений. */
+                /* Если верно удаляем приемник сообщений. */
                 context.unregisterReceiver(this);
-                /** Посылаем собвтие соединение. */
+                /* Посылаем собвтие соединение. */
                 onWifiConnectListener.onConnect(ssid);
-                /** Регистрируем приемник на disconnect. */
+                /* Регистрируем приемник на disconnect. */
                 new SupplicantDisconnectReceiver().register(context, new IntentFilter(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION));
                 return;
             }
-            /** Проверяем событие ОШИБКА АВТОРИЗАЦИИ при подключении к сети. */
+            /* Проверяем событие ОШИБКА АВТОРИЗАЦИИ при подключении к сети. */
             int error=intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -1);
             if(error== WifiManager.ERROR_AUTHENTICATING){
-                /** Удаляем приемник сообщений. */
+                /* Удаляем приемник сообщений. */
                 context.unregisterReceiver(this);
-                /** Запускаем приемник на прием события результат сканирования.*/
+                /* Запускаем приемник на прием события результат сканирования.*/
                 context.registerReceiver(new ScanWifiReceiver(), new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-                /** Запускаем сканирование сети. */
+                /* Запускаем сканирование сети. */
                 wifiManager.startScan();
             }
         }
@@ -259,18 +259,18 @@ public class WifiBaseManager  {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            /** Проверяем событие на выключение и включение WiFi приемника. */
+            /* Проверяем событие на выключение и включение WiFi приемника. */
             String action = intent.getAction();
             switch (action){
                 case WifiManager.WIFI_STATE_CHANGED_ACTION:
                     int extraWifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
                     switch(extraWifiState){
                         case WifiManager.WIFI_STATE_DISABLED:
-                            /** Если приемник был выключен заново включаем. */
+                            /* Если приемник был выключен заново включаем. */
                             internet.turnOnWiFiConnection(true);
                             break;
                         case WifiManager.WIFI_STATE_ENABLED:
-                            /** Приемник включен. Соеденяемся с конкретной сетью заново. */
+                            /* Приемник включен. Соеденяемся с конкретной сетью заново. */
                             connectToSpecificNetwork();
                             break;
                         case WifiManager.WIFI_STATE_UNKNOWN:
@@ -309,13 +309,13 @@ public class WifiBaseManager  {
             switch (action){
                 case WifiManager.SUPPLICANT_STATE_CHANGED_ACTION:
                     SupplicantState state = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
-                    /** Если событие disconnect. */
+                    /* Если событие disconnect. */
                     if (state == SupplicantState.DISCONNECTED){
-                        /** Удаляем приемник сообщений. */
+                        /* Удаляем приемник сообщений. */
                         unregister(context);
-                        /** Запускаем приемник на прием события результат сканирования.*/
+                        /* Запускаем приемник на прием события результат сканирования.*/
                         context.registerReceiver(new ScanWifiReceiver(), new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-                        /** Запускаем сканирование сети. */
+                        /* Запускаем сканирование сети. */
                         wifiManager.startScan();
                         eventsTable.insertNewEvent("Разьединение с сетью " + ssid, EventsTable.Event.WIFI_EVENT);
                     }

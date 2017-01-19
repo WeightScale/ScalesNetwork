@@ -43,7 +43,8 @@ public class SystemTable {
         WIFI_KEY("wifi_key"),
         WIFI_DEFAULT("wifi_default"),
         PATH_FORM("path_form"),
-        TERMINAL("terminal");
+        TERMINAL("terminal"),
+        PIN_TABLE("pin_table");
 
         public String getName() { return name; }
 
@@ -205,6 +206,7 @@ public class SystemTable {
         insert(db, Name.WIFI_KEY, "12345678");
         insert(db, Name.WIFI_DEFAULT, "0");
         insert(db, Name.TERMINAL, String.valueOf(Terminals.DEFAULT.ordinal()));
+        insert(db, Name.PIN_TABLE, "0000");
     }
 
     /** Вставляем настройку в таблицу.

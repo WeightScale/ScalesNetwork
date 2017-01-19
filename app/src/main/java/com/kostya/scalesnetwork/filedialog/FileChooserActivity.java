@@ -130,21 +130,21 @@ public class FileChooserActivity extends Activity implements FileChooser {
         super.onCreate(savedInstanceState);
         
 		// Set layout.
-		this.setContentView(R.layout.daidalos_file_chooser);
+		setContentView(R.layout.daidalos_file_chooser);
 		
 		// Set the background color.
-        LinearLayout layout = (LinearLayout) this.findViewById(R.id.rootLayout);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.rootLayout);
         layout.setBackgroundColor(getResources().getColor(R.color.daidalos_backgroud));
 
 		// Initialize fields.
-		this.useBackButton = false;
+		useBackButton = false;
 		
         // Create the core of the file chooser.
-        this.core = new FileChooserCore(this);
+		core = new FileChooserCore(this);
         
         // Verify if the optional parameters has been defined.
         String folderPath = null;
-        Bundle extras = this.getIntent().getExtras();
+        Bundle extras = getIntent().getExtras();
         if(extras != null) {
     		if(extras.containsKey(INPUT_START_FOLDER)) folderPath = extras.getString(INPUT_START_FOLDER);
             if(extras.containsKey(INPUT_REGEX_FILTER)) core.setFilter(extras.getString(INPUT_REGEX_FILTER));
@@ -157,15 +157,16 @@ public class FileChooserActivity extends Activity implements FileChooser {
             if(extras.containsKey(INPUT_SHOW_CANCEL_BUTTON)) core.setShowCancelButton(extras.getBoolean(INPUT_SHOW_CANCEL_BUTTON));
             if(extras.containsKey(INPUT_SHOW_CONFIRMATION_ON_SELECT)) core.setShowConfirmationOnSelect(extras.getBoolean(INPUT_SHOW_CONFIRMATION_ON_SELECT));
             if(extras.containsKey(INPUT_SHOW_FULL_PATH_IN_TITLE)) core.setShowFullPathInTitle(extras.getBoolean(INPUT_SHOW_FULL_PATH_IN_TITLE));
-            if(extras.containsKey(INPUT_USE_BACK_BUTTON_TO_NAVIGATE)) this.useBackButton = extras.getBoolean(INPUT_USE_BACK_BUTTON_TO_NAVIGATE);
+            if(extras.containsKey(INPUT_USE_BACK_BUTTON_TO_NAVIGATE)) useBackButton = extras.getBoolean(INPUT_USE_BACK_BUTTON_TO_NAVIGATE);
         }
 
         // Load the files of a folder.
         core.loadFolder(folderPath);
-        this.startFolder = this.core.getCurrentFolder();
+		startFolder = core.getCurrentFolder();
         
         // Add a listener for when a file is selected.
         core.addListener(new FileChooserCore.OnFileSelectedListener() {
+			@Override
 			public void onFileSelected(File folder, String name) {
 				// Pass the data through an intent.
 				Intent intent = new Intent();
@@ -177,6 +178,7 @@ public class FileChooserActivity extends Activity implements FileChooser {
                 setResult(RESULT_OK, intent);
                 finish();				
 			}
+			@Override
 			public void onFileSelected(File file) {
 				// Pass the data through an intent.
 				Intent intent = new Intent();
@@ -191,6 +193,7 @@ public class FileChooserActivity extends Activity implements FileChooser {
 
 		// Add a listener for when the cancel button is pressed.
 		core.addListener(new FileChooserCore.OnCancelListener() {
+			@Override
 			public void onCancel() {
                 // Close activity.
                 FileChooserActivity.super.onBackPressed();
@@ -202,29 +205,32 @@ public class FileChooserActivity extends Activity implements FileChooser {
     @Override
     public void onBackPressed() {
     	// Verify if the activity must be finished or if the parent folder must be opened.
-   	    File current = this.core.getCurrentFolder();
-   	    if(!this.useBackButton || current == null || current.getParent() == null || current.getPath().compareTo(this.startFolder.getPath()) == 0) {
+   	    File current = core.getCurrentFolder();
+   	    if(!useBackButton || current == null || current.getParent() == null || current.getPath().compareTo(startFolder.getPath()) == 0) {
    	    	// Close activity.
    	    	super.onBackPressed();
    	    }else{
    	    	// Open parent.
-   	        this.core.loadFolder(current.getParent());
+			core.loadFolder(current.getParent());
    	    }
   	}
     
     // ----- FileChooser methods ----- //
     
+	@Override
 	public LinearLayout getRootLayout() {
-		View root = this.findViewById(R.id.rootLayout);
+		View root = findViewById(R.id.rootLayout);
 		return (root instanceof LinearLayout)? (LinearLayout)root : null;
 	}
 
+	@Override
 	public Context getContext() {
 		//return this.getBaseContext();
 		return this;
 	}
 	
+	@Override
 	public void setCurrentFolderName(String name) {
-		this.setTitle(name);
+		setTitle(name);
 	}
 }

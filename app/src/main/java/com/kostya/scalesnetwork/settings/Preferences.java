@@ -1,5 +1,4 @@
-
-/**Простой класс настроек*/
+/*Простой класс настроек*/
 package com.kostya.scalesnetwork.settings;
 
 import android.content.Context;

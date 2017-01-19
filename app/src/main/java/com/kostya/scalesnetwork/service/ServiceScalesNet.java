@@ -20,7 +20,6 @@ import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import com.felhr.usbserial.UsbSerialDevice;
-import com.felhr.usbserial.UsbSerialInterface;
 import com.felhr.usbserial.UsbSerialInterface.UsbReadCallback;
 import com.kostya.scalesnetwork.*;
 import com.kostya.scalesnetwork.provider.EventsTable;
@@ -89,7 +88,7 @@ public class ServiceScalesNet extends Service {
             public void onDisconnect() {startDataTransferring();}
         });
         try {
-            /** Запускаем bluetooth на время */
+            /* Запускаем bluetooth на время */
             bluetoothBaseManager = new BluetoothBaseManager(getApplicationContext());
             bluetoothBaseManager.start();
         } catch (Exception e) {
@@ -170,8 +169,8 @@ public class ServiceScalesNet extends Service {
     }
 
     private class UsbBroadcastReceiver extends BroadcastReceiver {
-        Context mContext;
-        IntentFilter filter;
+        final Context mContext;
+        final IntentFilter filter;
         protected boolean isRegistered;
 
         UsbBroadcastReceiver(Context context){
@@ -245,10 +244,10 @@ public class ServiceScalesNet extends Service {
             serialPort = UsbSerialDevice.createUsbSerialDevice(usbDevice, connection);
             if (serialPort != null) {
                 if (serialPort.open()) { //Set Serial Connection Parameters.
-                    /*serialPort.setBaudRate(comPortObject.getSpeed()); //*/serialPort.setBaudRate(9600);                                   /** Скорость порта. */
-                    serialPort.setDataBits(comPortObject.getDataBits()); //serialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);         /** Формат данных. */
-                    serialPort.setStopBits(comPortObject.getStopBits()); //serialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);         /** Сторовый бит. */
-                    serialPort.setParity(comPortObject.getParity()); //serialPort.setParity(UsbSerialInterface.PARITY_NONE);           /** Бит четности. */
+                    serialPort.setBaudRate(comPortObject.getSpeed()); //serialPort.setBaudRate(9600);                              /** Скорость порта. */
+                    serialPort.setDataBits(comPortObject.getDataBits()); //serialPort.setDataBits(UsbSerialInterface.DATA_BITS_8); /** Формат данных. */
+                    serialPort.setStopBits(comPortObject.getStopBits()); //serialPort.setStopBits(UsbSerialInterface.STOP_BITS_1); /** Сторовый бит. */
+                    serialPort.setParity(comPortObject.getParity()); //serialPort.setParity(UsbSerialInterface.PARITY_NONE);       /** Бит четности. */
                     serialPort.setFlowControl(comPortObject.getFlowControl()); //serialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF); /** Флов контроль. */
                     serialPort.read(mCallback);
                     commandUsb = new Command(getApplicationContext(), interfaceCommandsUsb);
@@ -319,7 +318,7 @@ public class ServiceScalesNet extends Service {
         @Override
         public void onReceivedData(byte[] arg0) {
             try {
-                /** Фильтруем данные через класс терминала. */
+                /* Фильтруем данные через класс терминала. */
                 final String data = globals.terminal.filter(new String(arg0, "UTF-8")) ;
                 if (!data.isEmpty()){
                     //data.concat("\n").concat("\r");

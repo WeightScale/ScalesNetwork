@@ -12,8 +12,8 @@ import java.net.Socket;
  * @author Kostya on 13.07.2016.
  */
 public class ServerThread extends Thread {
-    private Context context;
-    private Socket socket;
+    private final Context context;
+    private final Socket socket;
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
     private InterfaceInterruptThread interfaceInterrupt;
@@ -38,13 +38,13 @@ public class ServerThread extends Thread {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.flush();
             objectInputStream = new ObjectInputStream(socket.getInputStream());
-            /** Вызываем для додавления в список. */
+            /* Вызываем для додавления в список. */
             interfaceInterrupt.onAddThread(this);
-            /** Получаем данные пока нет разрыва. */
+            /* Получаем данные пока нет разрыва. */
             while (!isInterrupted()){
                 Object object = objectInputStream.readObject();
                 if (object !=null){
-                    /** Выполняем принятую команду. */
+                    /* Выполняем принятую команду. */
                     ((CommandObject)object).execute(context, objectOutputStream);
                 }
             }
@@ -53,13 +53,13 @@ public class ServerThread extends Thread {
         }finally{
             closeSocket();
         }
-        /** Вызывем прерывание потока. */
+        /* Вызывем прерывание потока. */
         interrupt();
     }
 
     @Override
     public void interrupt() {
-        /** Передаем в интерфейс прерваный поток для удаления из списка. */
+        /* Передаем в интерфейс прерваный поток для удаления из списка. */
         interfaceInterrupt.onRemoveThread(this);
         super.interrupt();
     }

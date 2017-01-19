@@ -101,8 +101,8 @@ class FileChooserCore {
 	 */
 	private static File defaultFolder;
 
-	/**
-	 * Static constructor.
+	/*
+	  Static constructor.
 	 */
 	static {
 		defaultFolder = null;
@@ -117,23 +117,23 @@ class FileChooserCore {
 	 */
 	public FileChooserCore(FileChooser fileChooser) {
 		// Initialize attributes.
-		this.chooser = fileChooser;
-		this.fileSelectedListeners = new LinkedList<OnFileSelectedListener>();
-		this.cancelListeners = new LinkedList<OnCancelListener>();
-		this.filter = null;
-		this.folderFilter = null;
-		this.showOnlySelectable = false;
-		this.setCanCreateFiles(false);
-		this.setFolderMode(false);
-		this.currentFolder = null;
-		this.labels = null;
-		this.showConfirmationOnCreate = false;
-		this.showConfirmationOnSelect = false;
-		this.showFullPathInTitle = false;
-		this.showCancelButton = false;
+		chooser = fileChooser;
+		fileSelectedListeners = new LinkedList<OnFileSelectedListener>();
+		cancelListeners = new LinkedList<OnCancelListener>();
+		filter = null;
+		folderFilter = null;
+		showOnlySelectable = false;
+		setCanCreateFiles(false);
+		setFolderMode(false);
+		currentFolder = null;
+		labels = null;
+		showConfirmationOnCreate = false;
+		showConfirmationOnSelect = false;
+		showFullPathInTitle = false;
+		showCancelButton = false;
 
 		// Add listener for the buttons.
-		LinearLayout root = this.chooser.getRootLayout();
+		LinearLayout root = chooser.getRootLayout();
 		Button addButton = (Button) root.findViewById(R.id.buttonAdd);
 		addButton.setOnClickListener(addButtonClickListener);
 		Button okButton = (Button) root.findViewById(R.id.buttonOk);
@@ -148,6 +148,7 @@ class FileChooserCore {
 	 * Implementation of the click listener for when the add button is clicked.
 	 */
 	private View.OnClickListener addButtonClickListener = new View.OnClickListener() {
+		@Override
 		public void onClick(View v) {
 			// Get the current context.
 			Context context = v.getContext();
@@ -156,12 +157,12 @@ class FileChooserCore {
 			AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
 			// Define the dialog's labels.
-			String title = context.getString(FileChooserCore.this.folderMode? R.string.daidalos_create_folder : R.string.daidalos_create_file);
-			if(FileChooserCore.this.labels != null && FileChooserCore.this.labels.createFileDialogTitle != null) title = FileChooserCore.this.labels.createFileDialogTitle;
-			String message = context.getString(FileChooserCore.this.folderMode? R.string.daidalos_enter_folder_name : R.string.daidalos_enter_file_name);
-			if(FileChooserCore.this.labels != null && FileChooserCore.this.labels.createFileDialogMessage != null) message = FileChooserCore.this.labels.createFileDialogMessage;
-			String posButton = (FileChooserCore.this.labels != null && FileChooserCore.this.labels.createFileDialogAcceptButton != null)? FileChooserCore.this.labels.createFileDialogAcceptButton : context.getString(R.string.daidalos_accept);
-			String negButton = (FileChooserCore.this.labels != null && FileChooserCore.this.labels.createFileDialogCancelButton != null)? FileChooserCore.this.labels.createFileDialogCancelButton : context.getString(R.string.daidalos_cancel);
+			String title = context.getString(folderMode ? R.string.daidalos_create_folder : R.string.daidalos_create_file);
+			if(labels != null && labels.createFileDialogTitle != null) title = labels.createFileDialogTitle;
+			String message = context.getString(folderMode ? R.string.daidalos_enter_folder_name : R.string.daidalos_enter_file_name);
+			if(labels != null && labels.createFileDialogMessage != null) message = labels.createFileDialogMessage;
+			String posButton = (labels != null && labels.createFileDialogAcceptButton != null)? labels.createFileDialogAcceptButton : context.getString(R.string.daidalos_accept);
+			String negButton = (labels != null && labels.createFileDialogCancelButton != null)? labels.createFileDialogCancelButton : context.getString(R.string.daidalos_cancel);
 
 			// Set the title and the message.
 			alert.setTitle( title );
@@ -174,16 +175,18 @@ class FileChooserCore {
 
 			// Set the 'ok' and 'cancel' buttons.
 			alert.setPositiveButton(posButton, new DialogInterface.OnClickListener() {
+				@Override
 				public void onClick(DialogInterface dialog, int whichButton) {
 					String fileName = input.getText().toString();
 					// Verify if a value has been entered.
-					if(fileName != null && fileName.length() > 0) {
+					if(fileName != null && !fileName.isEmpty()) {
 						// Notify the listeners.
-						FileChooserCore.this.notifyFileListeners(FileChooserCore.this.currentFolder, fileName);
+						notifyFileListeners(currentFolder, fileName);
 					}
 				}
 			});
 			alert.setNegativeButton(negButton, new DialogInterface.OnClickListener() {
+				@Override
 				public void onClick(DialogInterface dialog, int whichButton) {
 					// Do nothing, automatically the dialog is going to be closed.
 				}
@@ -198,9 +201,10 @@ class FileChooserCore {
 	 * Implementation of the click listener for when the ok button is clicked.
 	 */
 	private View.OnClickListener okButtonClickListener = new View.OnClickListener() {
+		@Override
 		public void onClick(View v) {
 			// Notify the listeners.
-			FileChooserCore.this.notifyFileListeners(FileChooserCore.this.currentFolder, null);
+			notifyFileListeners(currentFolder, null);
 		}
 	};
 
@@ -208,9 +212,10 @@ class FileChooserCore {
 	 * Implementation of the click listener for when the cancel button is clicked.
 	 */
 	private View.OnClickListener cancelButtonClickListener = new View.OnClickListener() {
+		@Override
 		public void onClick(View v) {
 			// Notify the listeners.
-			FileChooserCore.this.notifyCancelListeners();
+			notifyCancelListeners();
 		}
 	};
 
@@ -218,15 +223,16 @@ class FileChooserCore {
 	 * Implementation of the click listener for when a file item is clicked.
 	 */
 	private FileItem.OnFileClickListener fileItemClickListener = new FileItem.OnFileClickListener() {
+		@Override
 		public void onClick(FileItem source) {
 			// Verify if the item is a folder.
 			File file = source.getFile();
 			if(file.isDirectory()) {
 				// Open the folder.
-				FileChooserCore.this.loadFolder(file);
+				loadFolder(file);
 			} else {
 				// Notify the listeners.
-				FileChooserCore.this.notifyFileListeners(file, null);
+				notifyFileListeners(file, null);
 			}
 		}
 	};
@@ -237,7 +243,7 @@ class FileChooserCore {
 	 * @param listener The listener to add.
 	 */
 	public void addListener(OnFileSelectedListener listener) {
-		this.fileSelectedListeners.add(listener);
+		fileSelectedListeners.add(listener);
 	}
 
 	/**
@@ -246,7 +252,7 @@ class FileChooserCore {
 	 * @param listener The listener to remove.
 	 */
 	public void removeListener(OnFileSelectedListener listener) {
-		this.fileSelectedListeners.remove(listener);
+		fileSelectedListeners.remove(listener);
 	}
 
 	/**
@@ -255,7 +261,7 @@ class FileChooserCore {
 	 * @param listener The listener to add.
 	 */
 	public void addListener(OnCancelListener listener) {
-		this.cancelListeners.add(listener);
+		cancelListeners.add(listener);
 	}
 
 	/**
@@ -264,15 +270,15 @@ class FileChooserCore {
 	 * @param listener The listener to remove.
 	 */
 	public void removeListener(OnCancelListener listener) {
-		this.cancelListeners.remove(listener);
+		cancelListeners.remove(listener);
 	}
 
 	/**
 	 * Removes all the listeners for the event of a file selected.
 	 */
 	public void removeAllListeners() {
-		this.fileSelectedListeners.clear();
-		this.cancelListeners.clear();
+		fileSelectedListeners.clear();
+		cancelListeners.clear();
 	}
 
 	/**
@@ -309,8 +315,8 @@ class FileChooserCore {
 	 * Notify to all listeners that the cancel button has been pressed.
 	 */
 	private void notifyCancelListeners() {
-		for(int i=0; i<FileChooserCore.this.cancelListeners.size(); i++) {
-			FileChooserCore.this.cancelListeners.get(i).onCancel();
+		for(int i = 0; i< cancelListeners.size(); i++) {
+			cancelListeners.get(i).onCancel();
 		}
 	}
 
@@ -322,44 +328,46 @@ class FileChooserCore {
 	 */
 	private void notifyFileListeners(final File file, final String name) {
 		// Determine if a file has been selected or created.
-		final boolean creation = name != null && name.length() > 0;
+		final boolean creation = name != null && !name.isEmpty();
 
 		// Verify if a confirmation dialog must be show.
-		if((creation && this.showConfirmationOnCreate || !creation && this.showConfirmationOnSelect)) {
+		if((creation && showConfirmationOnCreate || !creation && showConfirmationOnSelect)) {
 			// Create an alert dialog.
-			Context context = this.chooser.getContext();
+			Context context = chooser.getContext();
 			AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
 			// Define the dialog's labels.
 			String message = null;
-			if(FileChooserCore.this.labels != null && ((creation && FileChooserCore.this.labels.messageConfirmCreation != null) || (!creation && FileChooserCore.this.labels.messageConfirmSelection != null)))  {
-				message = creation? FileChooserCore.this.labels.messageConfirmCreation : FileChooserCore.this.labels.messageConfirmSelection;
+			if(labels != null && ((creation && labels.messageConfirmCreation != null) || (!creation && labels.messageConfirmSelection != null)))  {
+				message = creation? labels.messageConfirmCreation : labels.messageConfirmSelection;
 			} else {
-				if(FileChooserCore.this.folderMode) {
+				if(folderMode) {
 					message = context.getString(creation? R.string.daidalos_confirm_create_folder : R.string.daidalos_confirm_select_folder);
 				} else {
 					message = context.getString(creation? R.string.daidalos_confirm_create_file : R.string.daidalos_confirm_select_file);
 				}
 			}
 			if(message != null) message = message.replace("$file_name", name!=null? name : file.getName());
-			String posButton = (FileChooserCore.this.labels != null && FileChooserCore.this.labels.labelConfirmYesButton != null)? FileChooserCore.this.labels.labelConfirmYesButton : context.getString(R.string.daidalos_yes);
-			String negButton = (FileChooserCore.this.labels != null && FileChooserCore.this.labels.labelConfirmNoButton != null)? FileChooserCore.this.labels.labelConfirmNoButton : context.getString(R.string.daidalos_no);
+			String posButton = (labels != null && labels.labelConfirmYesButton != null)? labels.labelConfirmYesButton : context.getString(R.string.daidalos_yes);
+			String negButton = (labels != null && labels.labelConfirmNoButton != null)? labels.labelConfirmNoButton : context.getString(R.string.daidalos_no);
 
 			// Set the message and the 'yes' and 'no' buttons.
 			alert.setMessage( message );
 			alert.setPositiveButton(posButton, new DialogInterface.OnClickListener() {
+				@Override
 				public void onClick(DialogInterface dialog, int whichButton) {
 					// Notify to listeners.
-					for(int i=0; i<FileChooserCore.this.fileSelectedListeners.size(); i++) {
+					for(int i = 0; i< fileSelectedListeners.size(); i++) {
 						if(creation) {
-							FileChooserCore.this.fileSelectedListeners.get(i).onFileSelected(file, name);
+							fileSelectedListeners.get(i).onFileSelected(file, name);
 						} else {
-							FileChooserCore.this.fileSelectedListeners.get(i).onFileSelected(file);
+							fileSelectedListeners.get(i).onFileSelected(file);
 						}
 					}
 				}
 			});
 			alert.setNegativeButton(negButton, new DialogInterface.OnClickListener() {
+				@Override
 				public void onClick(DialogInterface dialog, int whichButton) {
 					// Do nothing, automatically the dialog is going to be closed.
 				}
@@ -369,11 +377,11 @@ class FileChooserCore {
 			alert.show();
 		} else {
 			// Notify to listeners.
-			for(int i=0; i<FileChooserCore.this.fileSelectedListeners.size(); i++) {
+			for(int i = 0; i< fileSelectedListeners.size(); i++) {
 				if(creation) {
-					FileChooserCore.this.fileSelectedListeners.get(i).onFileSelected(file, name);
+					fileSelectedListeners.get(i).onFileSelected(file, name);
 				} else {
-					FileChooserCore.this.fileSelectedListeners.get(i).onFileSelected(file);
+					fileSelectedListeners.get(i).onFileSelected(file);
 				}
 			}
 		}
@@ -387,7 +395,7 @@ class FileChooserCore {
 	 * @param show 'true' for show the confirmation dialog, 'false' for not show the dialog.
 	 */
 	public void setShowConfirmationOnSelect(boolean show) {
-		this.showConfirmationOnSelect = show;
+		showConfirmationOnSelect = show;
 	}
 
 	/**
@@ -396,7 +404,7 @@ class FileChooserCore {
 	 * @param show 'true' for show the confirmation dialog, 'false' for not show the dialog.
 	 */
 	public void setShowConfirmationOnCreate(boolean show) {
-		this.showConfirmationOnCreate = show;
+		showConfirmationOnCreate = show;
 	}
 
 	/**
@@ -405,7 +413,7 @@ class FileChooserCore {
 	 * @param show 'true' for show the full path, 'false' for show only the name.
 	 */
 	public void setShowFullPathInTitle(boolean show) {
-		this.showFullPathInTitle = show;
+		showFullPathInTitle = show;
 	}
 
 	/**
@@ -418,7 +426,7 @@ class FileChooserCore {
 
 		// Verify if the buttons for add a file or select a folder has been modified.
 		if(labels != null) {
-			LinearLayout root = this.chooser.getRootLayout();
+			LinearLayout root = chooser.getRootLayout();
 
 			if(labels.labelAddButton != null) {
 				Button addButton = (Button) root.findViewById(R.id.buttonAdd);
@@ -443,14 +451,14 @@ class FileChooserCore {
 	 * @param filter A regular expression.
 	 */
 	public void setFilter(String filter) {
-		if(filter == null || filter.length() == 0 ) {
+		if(filter == null || filter.isEmpty()) {
 			this.filter = null;
 		} else {
 			this.filter = filter;
 		}
 
 		// Reload the list of files.
-		this.loadFolder(this.currentFolder);
+		loadFolder(currentFolder);
 	}
 
 	/**
@@ -459,14 +467,14 @@ class FileChooserCore {
 	 * @param folderFilter A regular expression.
 	 */
 	public void setFolderFilter(String folderFilter) {
-		if(folderFilter == null || folderFilter.length() == 0 ) {
+		if(folderFilter == null || folderFilter.isEmpty()) {
 			this.folderFilter = null;
 		} else {
 			this.folderFilter = folderFilter;
 		}
 
 		// Reload the list of files.
-		this.loadFolder(this.currentFolder);
+		loadFolder(currentFolder);
 	}
 
 	/**
@@ -481,7 +489,7 @@ class FileChooserCore {
 		updateButtonsLayout();
 
 		// Reload the list of files.
-		this.loadFolder(this.currentFolder);
+		loadFolder(currentFolder);
 	}
 
 	/**
@@ -502,7 +510,7 @@ class FileChooserCore {
 	 * @param canCreate 'true' if the user can create files or 'false' if it can only select them.
 	 */
 	public void setCanCreateFiles(boolean canCreate) {
-		this.canCreateFiles = canCreate;
+		canCreateFiles = canCreate;
 
 		// Show or hide the 'Add' button.
 		updateButtonsLayout();
@@ -514,10 +522,10 @@ class FileChooserCore {
 	 * @param show 'true' if only the files that can be selected must be show or 'false' if all the files must be show.
 	 */
 	public void setShowOnlySelectable(boolean show) {
-		this.showOnlySelectable = show;
+		showOnlySelectable = show;
 
 		// Reload the list of files.
-		this.loadFolder(this.currentFolder);
+		loadFolder(currentFolder);
 	}
 
 	/**
@@ -526,7 +534,7 @@ class FileChooserCore {
 	 * @return The current folder.
 	 */
 	public File getCurrentFolder() {
-		return this.currentFolder;
+		return currentFolder;
 	}
 
 	// ----- Miscellaneous methods ----- //
@@ -536,26 +544,26 @@ class FileChooserCore {
 	 */
 	private void updateButtonsLayout() {
 		// Get the buttons layout.
-		LinearLayout root = this.chooser.getRootLayout();
+		LinearLayout root = chooser.getRootLayout();
 
 		// Verify if the 'Add' button is visible or not.
 		View addButton = root.findViewById(R.id.buttonAdd);
-		addButton.setVisibility(this.canCreateFiles? View.VISIBLE : View.GONE);
+		addButton.setVisibility(canCreateFiles ? View.VISIBLE : View.GONE);
 
 		// Verify if the 'Ok' button is visible or not.
 		View okButton = root.findViewById(R.id.buttonOk);
-		okButton.setVisibility(this.folderMode? View.VISIBLE : View.GONE);
+		okButton.setVisibility(folderMode ? View.VISIBLE : View.GONE);
 
 		// Verify if the 'Cancel' button is visible or not.
 		View cancelButton = root.findViewById(R.id.buttonCancel);
-		cancelButton.setVisibility(this.showCancelButton? View.VISIBLE : View.GONE);
+		cancelButton.setVisibility(showCancelButton ? View.VISIBLE : View.GONE);
 	}
 
 	/**
 	 * Loads all the files of the SD card root.
 	 */
 	public void loadFolder() {
-		this.loadFolder(defaultFolder);
+		loadFolder(defaultFolder);
 	}
 
 	/**
@@ -568,11 +576,11 @@ class FileChooserCore {
 	public void loadFolder(String folderPath) {
 		// Get the file path.
 		File path = null;
-		if(folderPath != null && folderPath.length() > 0) {
+		if(folderPath != null && !folderPath.isEmpty()) {
 			path = new File(folderPath);
 		}
 
-		this.loadFolder(path);
+		loadFolder(path);
 	}
 
 	/**
@@ -584,42 +592,43 @@ class FileChooserCore {
 	 */
 	public void loadFolder(File folder) {
 		// Remove previous files.
-		LinearLayout root = this.chooser.getRootLayout();
+		LinearLayout root = chooser.getRootLayout();
 		LinearLayout layout = (LinearLayout) root.findViewById(R.id.linearLayoutFiles);
 		layout.removeAllViews();
 
 		// Get the file path.
 		if(folder == null || !folder.exists()) {
-			if(this.defaultFolder != null) {
-				this.currentFolder = this.defaultFolder;
+			if(defaultFolder != null) {
+				currentFolder = defaultFolder;
 			} else {
-				this.currentFolder = Environment.getExternalStorageDirectory();
+				currentFolder = Environment.getExternalStorageDirectory();
 			}
 		} else {
-			this.currentFolder = folder;
+			currentFolder = folder;
 		}
 
 		// Verify if the path exists.
-		if(this.currentFolder.exists() && layout != null) {
+		if(currentFolder.exists() && layout != null) {
 			List<FileItem> fileItems = new LinkedList<FileItem>();
 
 			// Add the parent folder.
-			if(this.currentFolder.getParent() != null) {
-				File parent = new File(this.currentFolder.getParent());
+			if(currentFolder.getParent() != null) {
+				File parent = new File(currentFolder.getParent());
 				if(parent.exists()) {
-					FileItem parentFolder = new FileItem(this.chooser.getContext(), parent, "..");
-					parentFolder.setSelectable(this.folderFilter == null || parent.getAbsolutePath().matches(this.folderFilter));
+					FileItem parentFolder = new FileItem(chooser.getContext(), parent, "..");
+					parentFolder.setSelectable(folderFilter == null || parent.getAbsolutePath().matches(folderFilter));
 					fileItems.add(parentFolder);
 				}
 			}
 
 			// Verify if the file is a directory.
-			if(this.currentFolder.isDirectory()) {
+			if(currentFolder.isDirectory()) {
 				// Get the folder's files.
-				File[] fileList = this.currentFolder.listFiles();
+				File[] fileList = currentFolder.listFiles();
 				if(fileList != null) {
 					// Order the files alphabetically and separating folders from files.
 					Arrays.sort(fileList, new Comparator<File>() {
+						@Override
 						public int compare(File file1, File file2) {
 							if(file1 != null && file2 != null) {
 								if(file1.isDirectory() && (!file2.isDirectory())) return -1;
@@ -636,16 +645,16 @@ class FileChooserCore {
 						boolean selectable = true;
 						if(!fileList[i].isDirectory()) {
 							// File is selectable as long the user is not selecting folders and if pass the filter (if defined).
-							selectable = !this.folderMode && (this.filter == null || fileList[i].getName().matches(this.filter));
+							selectable = !folderMode && (filter == null || fileList[i].getName().matches(filter));
 						} else {
 							// Folders can be selected iif pass the filter (if defined).
-							selectable = this.folderFilter == null || fileList[i].getAbsolutePath().matches(this.folderFilter);
+							selectable = folderFilter == null || fileList[i].getAbsolutePath().matches(folderFilter);
 						}
 
 						// Verify if the file must be show.
-						if(selectable || !this.showOnlySelectable) {
+						if(selectable || !showOnlySelectable) {
 							// Create the file item and add it to the list.
-							FileItem fileItem = new FileItem(this.chooser.getContext(), fileList[i]);
+							FileItem fileItem = new FileItem(chooser.getContext(), fileList[i]);
 							fileItem.setSelectable(selectable);
 							fileItems.add(fileItem);
 						}
@@ -653,22 +662,22 @@ class FileChooserCore {
 				}
 
 				// Set the name of the current folder.
-				String currentFolderName = this.showFullPathInTitle? this.currentFolder.getPath() : this.currentFolder.getName();
-				this.chooser.setCurrentFolderName(currentFolderName);
+				String currentFolderName = showFullPathInTitle ? currentFolder.getPath() : currentFolder.getName();
+				chooser.setCurrentFolderName(currentFolderName);
 			} else {
 				// The file is not a folder, add only this file.
-				fileItems.add(new FileItem(this.chooser.getContext(), this.currentFolder));
+				fileItems.add(new FileItem(chooser.getContext(), currentFolder));
 			}
 
 
 			// Add click listener and add the FileItem objects to the layout.
 			for(int i=0; i<fileItems.size(); i++) {
-				fileItems.get(i).addListener(this.fileItemClickListener);
+				fileItems.get(i).addListener(fileItemClickListener);
 				layout.addView(fileItems.get(i));
 			}
 
 			// Refresh default folder.
-			defaultFolder = this.currentFolder;
+			defaultFolder = currentFolder;
 		}
 	}
 }

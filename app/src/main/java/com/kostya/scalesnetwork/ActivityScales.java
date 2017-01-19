@@ -1,12 +1,12 @@
 package com.kostya.scalesnetwork;
 
-import android.app.Activity;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.*;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -14,15 +14,18 @@ import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import com.google.ads.*;
 import com.google.android.gms.ads.*;
 import com.google.android.gms.ads.AdRequest;
 import com.kostya.scalesnetwork.settings.ActivityPreferences;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
 
 /**
  * @author Kostya
  */
 public class ActivityScales extends AppCompatActivity implements View.OnClickListener{
+    //private Toolbar mToolbar;
     private ImageView buttonBack;
     private TextView textViewWeight ;
     private Receiver receiver;
@@ -33,6 +36,7 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
     public static final String WEIGHT = "com.kostya.scaleswifinet.WEIGHT";
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +44,16 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
             requestWindowFeature(Window.FEATURE_NO_TITLE);*/
         setContentView(R.layout.activity_main);
 
+        //getSupportActionBar().hide();
+        //mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(mToolbar);
+        /*findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            //@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View v) {
+                mToolbar.showOverflowMenu();
+            }
+        });*/
         //MobileAds.initialize(getApplicationContext(), "ca-app-pub-5128519816521867~6355295033");
 
         mInterstitialAd = new InterstitialAd(getApplicationContext());
@@ -54,7 +68,9 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onAdClosed() {
                 requestNewInterstitial();
-                openOptionsMenu();
+                //openOptionsMenu();
+                //mToolbar.showOverflowMenu();
+                startActivity(new Intent(getApplicationContext(), ActivityPreferences.class));
             }
 
             @Override
@@ -113,11 +129,13 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
                 onBackPressed();
                 break;
             case R.id.imageMenu:
-                if (mInterstitialAd.isLoaded()) {
+                //mToolbar.showOverflowMenu();
+                /*if (mInterstitialAd.isLoaded()) {
                     mInterstitialAd.show();
                 } else {
-                    openOptionsMenu();
-                }
+                    //openOptionsMenu();
+                    mToolbar.showOverflowMenu();
+                }*/
                 break;
             default:
         }
@@ -131,7 +149,7 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
 
     /*@Override
     public void openOptionsMenu() {
-        super.openOptionsMenu();
+        //super.openOptionsMenu();
         Configuration config = getResources().getConfiguration();
         if ((config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) > Configuration.SCREENLAYOUT_SIZE_LARGE) {
             int originalScreenLayout = config.screenLayout;
@@ -154,7 +172,12 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.preferences:
-                startActivity(new Intent(this, ActivityPreferences.class));
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    //mToolbar.showOverflowMenu();
+                    startActivity(new Intent(this, ActivityPreferences.class));
+                }
                 break;
             case R.id.exit:
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -182,7 +205,8 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
             default:
 
         }
-        return true;
+        return super.onOptionsItemSelected(item);
+        //return true;
     }
 
     @Override
@@ -192,7 +216,7 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
                 if (resultCode == RESULT_OK) {
                     // Get the Uri of the selected file
                     Uri uri = data.getData();
-                    Log.d(TAG, "File Uri: " + uri.toString());
+                    Log.d(TAG, "File Uri: " + uri);
                     // Get the path
                     String path = uri.getPath();
                     //String path = File.getPath(this, uri);
@@ -213,15 +237,15 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
 
         try {
             startActivityForResult(Intent.createChooser(intent, "Select a File to Upload"), FILE_SELECT_CODE);
-        } catch (android.content.ActivityNotFoundException ex) {
+        } catch (ActivityNotFoundException ex) {
             // Potentially direct the user to the Market with a Dialog
             Toast.makeText(this, "Please install a File Manager.",  Toast.LENGTH_SHORT).show();
         }
     }
 
     class Receiver extends BroadcastReceiver {
-        Context mContext;
-        IntentFilter filter;
+        final Context mContext;
+        final IntentFilter filter;
         protected boolean isRegistered;
 
         Receiver(Context context){
@@ -244,18 +268,16 @@ public class ActivityScales extends AppCompatActivity implements View.OnClickLis
             }
         }
 
-        public Intent register() {
+        public void register() {
             isRegistered = true;
-            return mContext.registerReceiver(this, filter);
+            mContext.registerReceiver(this, filter);
         }
 
-        public boolean unregister() {
+        public void unregister() {
             if (isRegistered) {
                 mContext.unregisterReceiver(this);  // edited
                 isRegistered = false;
-                return true;
             }
-            return false;
         }
     }
 

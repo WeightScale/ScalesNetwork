@@ -27,12 +27,12 @@ public class FileItem extends LinearLayout {
 	/**
 	 * The image in which show the file's icon.
 	 */
-	private ImageView icon;
+	private final ImageView icon;
 	
 	/**
 	 * The label in which show the file's name.
 	 */
-	private TextView label;
+	private final TextView label;
 	
 	/**
 	 * A boolean indicating if the item can be selected.
@@ -42,7 +42,7 @@ public class FileItem extends LinearLayout {
 	/**
 	 * The listeners for the click event.
 	 */
-	private List<OnFileClickListener> listeners;
+	private final List<OnFileClickListener> listeners;
 
 	// ----- Constructor ----- //
 
@@ -59,14 +59,14 @@ public class FileItem extends LinearLayout {
 		inflater.inflate(R.layout.daidalos_file_item, this, true);
 
 		// Initialize attributes.
-		this.file = null;
-		this.selectable = true;
-		this.icon = (ImageView) this.findViewById(R.id.imageViewIcon);
-		this.label = (TextView) this.findViewById(R.id.textViewLabel);
-		this.listeners = new LinkedList<OnFileClickListener>();
+        file = null;
+        selectable = true;
+        icon = (ImageView) findViewById(R.id.imageViewIcon);
+        label = (TextView) findViewById(R.id.textViewLabel);
+        listeners = new LinkedList<OnFileClickListener>();
 
 		// Add a listener for the click event.
-		this.setOnClickListener(this.clickListener);
+        setOnClickListener(clickListener);
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class FileItem extends LinearLayout {
 		this(context);
 
 		// Set the file.
-		this.setFile(file);
+        setFile(file);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class FileItem extends LinearLayout {
 		this(context, file);
 
 		// Set the label.
-		this.setLabel(label);
+        setLabel(label);
 	}
 
 	// ----- Get() and Set() methods ----- //
@@ -108,10 +108,10 @@ public class FileItem extends LinearLayout {
 			this.file = file;
 
 			// Replace the label by the file's name.
-			this.setLabel(file.getName());
+            setLabel(file.getName());
 
 			// Change the icon, depending if the file is a folder or not.
-			this.updateIcon();
+            updateIcon();
 		}
 	}
 
@@ -121,7 +121,7 @@ public class FileItem extends LinearLayout {
 	 * @return A file.
 	 */
 	public File getFile() {
-		return this.file;
+		return file;
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class FileItem extends LinearLayout {
 	 * @return 'true' if the item can be selected, 'false' if not.
 	 */
 	public boolean isSelectable() {
-		return this.selectable;
+		return selectable;
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class FileItem extends LinearLayout {
 		this.selectable = selectable;
 
 		// Update the icon.
-		this.updateIcon();
+        updateIcon();
 	}
 
 	// ----- Miscellaneous methods ----- //
@@ -170,10 +170,10 @@ public class FileItem extends LinearLayout {
 	private void updateIcon() {
 		// Define the icon.
 		int icon = R.drawable.document;
-		if(this.file != null && file.isDirectory()) {
-			icon = this.selectable? R.drawable.folder : R.drawable.folder_gray;
+		if(file != null && file.isDirectory()) {
+			icon = selectable ? R.drawable.folder : R.drawable.folder_gray;
 		} else {
-			icon = this.selectable? R.drawable.document : R.drawable.document_gray;
+			icon = selectable ? R.drawable.document : R.drawable.document_gray;
 		}
 
 		// Set the icon.
@@ -181,9 +181,9 @@ public class FileItem extends LinearLayout {
 
 		// Change the color of the text.
 		if(icon != R.drawable.document_gray && icon != R.drawable.folder_gray) {
-			this.label.setTextColor(getResources().getColor(R.color.daidalos_active_file));
+            label.setTextColor(getResources().getColor(R.color.daidalos_active_file));
 		} else {
-			this.label.setTextColor(getResources().getColor(R.color.daidalos_inactive_file));
+            label.setTextColor(getResources().getColor(R.color.daidalos_inactive_file));
 		}
 	}
 
@@ -192,14 +192,15 @@ public class FileItem extends LinearLayout {
 	/**
 	 * Listener for the click event.
 	 */
-	private View.OnClickListener clickListener = new View.OnClickListener() {
+	private final View.OnClickListener clickListener = new View.OnClickListener() {
 
+		@Override
 		public void onClick(View v) {
 			// Verify if the item can be selected.
-			if(FileItem.this.selectable) {
+			if(selectable) {
 				// Call the listeners.
-				for(int i=0; i<FileItem.this.listeners.size(); i++) {
-					FileItem.this.listeners.get(i).onClick(FileItem.this);
+				for(int i = 0; i< listeners.size(); i++) {
+                    listeners.get(i).onClick(FileItem.this);
 				}
 			}
 		}
@@ -211,7 +212,7 @@ public class FileItem extends LinearLayout {
 	 * @param listener The listener to add.
 	 */
 	public void addListener(FileItem.OnFileClickListener listener) {
-		this.listeners.add(listener);
+        listeners.add(listener);
 	}
 
 	/**
@@ -220,14 +221,14 @@ public class FileItem extends LinearLayout {
 	 * @param listener The listener to remove.
 	 */
 	public void removeListener(FileItem.OnFileClickListener listener) {
-		this.listeners.remove(listener);
+        listeners.remove(listener);
 	}
 	
 	/**
 	 * Removes all the listeners for the click event.
 	 */
 	public void removeAllListeners() {
-		this.listeners.clear();
+        listeners.clear();
 	}
 	
 	/**

@@ -11,17 +11,17 @@ import java.io.Serializable;
 import java.net.Socket;
 
 /**
- * @author Kostya  on 10.07.2016.
+ * @author Kostya on 10.07.2016.
  */
 public class CommandObject implements Serializable {
     private static final long serialVersionUID = 7526471155622776147L;
     //CommandObject instance;
     //private ExecutorService executorService;
-    Commands commandName;
-    Object object = null;
+    final Commands commandName;
+    Object object;
     public CommandObject(Commands name, Object o){
         this(name);
-        this.object = o;
+        object = o;
     }
 
     public CommandObject(Commands name){
@@ -79,9 +79,9 @@ public class CommandObject implements Serializable {
         }).start();
     }
 
-    /**
-     * Always treat de-serialization as a full-blown constructor, by
-     * validating the final state of the de-serialized object.
+    /*
+      Always treat de-serialization as a full-blown constructor, by
+      validating the final state of the de-serialized object.
      */
     /*private void readObject( ObjectInputStream aInputStream ) throws ClassNotFoundException, IOException {
         //always perform the default de-serialization first
@@ -94,9 +94,9 @@ public class CommandObject implements Serializable {
         //validateState();
     }*/
 
-    /**
-     * This is the default implementation of writeObject.
-     * Customise if necessary.
+    /*
+      This is the default implementation of writeObject.
+      Customise if necessary.
      */
     /*private void writeObject( ObjectOutputStream aOutputStream ) throws IOException {
         //perform the default serialization for all non-transient, non-static fields
